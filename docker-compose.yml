@@ -1,0 +1,47 @@
+
+services:
+  # Frontend (React)
+  rc_frontend:
+    build:
+      context: ./rc-tracker-frontend
+    hostname: rc_frontend.internal
+    restart: always
+    environment:
+      - REACT_APP_API_URL=http://rc_backend:8000  
+    ports:
+      - "3000:3000" 
+    volumes:
+    - ./rc-tracker-frontend/rc_frontend/:/app 
+    depends_on:
+      - rc_backend
+
+  # Backend (Django)
+  rc_backend:
+    build:
+      context: ./rc-tracker-backend
+    hostname: rc_backend.internal
+    command: python manage.py runserver 0.0.0.0:8000
+    ports:
+      - "8000:8000" 
+    volumes:
+      - ./rc-tracker-backend:/usr/src/app/
+    env_file:
+      - .env.dev
+    environment:
+      - DATABASE=postgres
+      - SQL_HOST=rc_db.internal
+      - SQL_PORT=5432
+    depends_on:
+      - rc_db 
+
+  rc_db:
+    image: postgres:13
+    hostname: rc_db.internal
+    environment:
+      POSTGRES_DB: rc_tracker
+      POSTGRES_USER: rc_tracker
+      POSTGRES_PASSWORD: 1234
+    volumes:
+      - rc_db_data:/var/lib/postgresql/data
+volumes:
+  rc_db_data:
