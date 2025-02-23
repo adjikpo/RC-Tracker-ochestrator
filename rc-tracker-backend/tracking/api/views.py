@@ -77,16 +77,14 @@ class SectionViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
 
 class SuiviViewSet(viewsets.ModelViewSet):
-    queryset = Suivi.objects.all()  # Ajouté pour le router
+    queryset = Suivi.objects.all()
     serializer_class = SuiviSerializer
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        """Retourne uniquement les suivis de l’utilisateur connecté."""
         return Suivi.objects.filter(user=self.request.user)
 
     def perform_create(self, serializer):
-        """Associe automatiquement l’utilisateur connecté au suivi créé."""
         serializer.save(user=self.request.user)
 
 class ScoreViewSet(viewsets.ModelViewSet):
@@ -98,3 +96,49 @@ class SemaineConfigViewSet(viewsets.ModelViewSet):
     queryset = SemaineConfig.objects.all()
     serializer_class = SemaineConfigSerializer
     permission_classes = [IsAuthenticated]
+
+class GroupMembersView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, group_id):
+        try:
+            groupe = Groupe.objects.get(id=group_id)
+            membres = User.objects.filter(groupe=groupe)  # Filtrer par le champ ForeignKey groupe
+            if request.user not in membres:
+                return Response({'error': 'Vous n’êtes pas membre de ce groupe'}, status=status.HTTP_403_FORBIDDEN)
+            data = []
+            for membre in membres:
+                habitudes = Habitude.objects.filter(created_by=membre)
+                suivis = Suivi.objects.filter(user=membre)
+                data.append({
+                    'user': UserSerializer(membre).data,
+                    'habitudes': HabitudeSerializer(habitudes, many=True).data,
+                    'suivis': SuiviSerializer(suivis, many=True).data
+                })
+            return Response(data)
+        except Groupe.DoesNotExist:
+            return Response({'error': 'Groupe non trouvé'}, status=status.HTTP_404_NOT_FOUND)
+
+class GroupScoresView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, group_id):
+        try:
+            groupe = Groupe.objects.get(id=group_id)
+            if request.user not in groupe.membres.all():
+                return Response({'error': 'Vous n’êtes pas membre de ce groupe'}, status=status.HTTP_403_FORBIDDEN)
+            membres = groupe.membres.all()
+            scores = []
+            for membre in membres:
+                suivis_count = Suivi.objects.filter(user=membre, status=True).count()
+                scores.append({'user': membre.username, 'score': suivis_count})
+            return Response(scores)
+        except Groupe.DoesNotExist:
+            return Response({'error': 'Groupe non trouvé'}, status=status.HTTP_404_NOT_FOUND)
+        
+class UserMeView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        serializer = UserSerializer(request.user)
+        return Response(serializer.data)

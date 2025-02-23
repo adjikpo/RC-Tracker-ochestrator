@@ -3,7 +3,8 @@ from rest_framework.routers import DefaultRouter
 from tracking.api.views import (
     UserViewSet, LoginView, RefreshTokenView, LogoutView,
     HabitudeViewSet, GroupeViewSet, SectionViewSet,
-    SuiviViewSet, ScoreViewSet, SemaineConfigViewSet
+    SuiviViewSet, ScoreViewSet, SemaineConfigViewSet,
+    GroupMembersView, GroupScoresView, UserMeView
 )
 
 router = DefaultRouter()
@@ -20,4 +21,7 @@ urlpatterns = [
     path('token/', LoginView.as_view(), name='token_obtain_pair'),
     path('token/refresh/', RefreshTokenView.as_view(), name='token_refresh'),
     path('logout/', LogoutView.as_view(), name='logout'),
+    path('groupes/<int:group_id>/membres/', GroupMembersView.as_view(), name='group_members'),
+    path('groupes/<int:group_id>/scores/', GroupScoresView.as_view(), name='group_scores'),
+    path('users/me/', UserMeView.as_view(), name='user_me'),
 ]
