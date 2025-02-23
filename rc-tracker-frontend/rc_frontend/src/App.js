@@ -24,7 +24,7 @@ const lightTheme = createTheme({
 const darkTheme = createTheme({
   palette: {
     mode: 'dark',
-    background: { default: '#121212', paper: '#1e1e1e' },
+    background: { default: '#131313', paper: '#131313' },
     text: { primary: '#fff' },
     primary: { main: '#1976d2' },
   },
@@ -91,7 +91,7 @@ function App() {
       <CssBaseline />
       <Box sx={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
         {tokens && (
-          <AppBar position="static" sx={{ backgroundColor: isDarkMode ? '#131313' : '#1976d2' }}>
+          <AppBar position="static" sx={{ backgroundColor: isDarkMode ? '#131313' : '#131313' }}>
             <Toolbar>
               <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
                 RC Tracker
