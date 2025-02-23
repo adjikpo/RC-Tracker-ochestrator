@@ -26,7 +26,7 @@ class UserSerializer(serializers.ModelSerializer):
 class HabitudeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Habitude
-        fields = ['id', 'nom','created_by']
+        fields = ['id', 'nom', 'ordre', 'created_by']
         read_only_fields = ['created_by']
         
 # Serializer pour Groupe

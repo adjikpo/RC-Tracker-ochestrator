@@ -30,6 +30,13 @@ export const updateHabitude = async (token, habitudeId, habitude) => {
   return response.data;
 };
 
+export const deleteHabitude = async (token, habitudeId) => {
+  const response = await axios.delete(`${API_URL}/tracking/habitudes/${habitudeId}/`, {
+    headers: { Authorization: `Bearer ${token}` }
+  });
+  return response.data;
+};
+
 export const addSuivi = async (token, suivi) => {
   const response = await axios.post(`${API_URL}/tracking/suivis/`, suivi, {
     headers: { Authorization: `Bearer ${token}` }

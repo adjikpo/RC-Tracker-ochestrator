@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { CssBaseline, Button, TextField, Typography, Box } from '@mui/material';
+import { Button, TextField, Typography, Box } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { login } from '../services/api';
 
@@ -7,15 +7,19 @@ const StyledButton = styled(Button)(({ theme }) => ({
   padding: '12px 24px',
   fontSize: '18px',
   textTransform: 'none',
-  backgroundColor: '#1976d2',
+  backgroundColor: '#000',
   color: '#fff',
   borderRadius: '25px',
+  border: '2px solid #fff',
+  boxShadow: '0 4px 8px rgba(0, 0, 0, 0.3)',
   '&:hover': {
-    backgroundColor: '#1565c0',
+    backgroundColor: '#333',
+    borderColor: '#ddd',
   },
   '&:disabled': {
     backgroundColor: '#666',
     color: '#ccc',
+    borderColor: '#999',
   },
 }));
 
@@ -47,7 +51,7 @@ const BackgroundSection = styled('div')(({ isBlurred, theme }) => ({
 const FormSection = styled('div')(({ theme }) => ({
   width: '30%',
   height: '100vh',
-  backgroundColor: '#1e1e1e',
+  backgroundColor: theme.palette.background.paper,
   display: 'flex',
   flexDirection: 'column',
   justifyContent: 'center',
@@ -97,7 +101,7 @@ function Login({ setTokens }) {
     <LoginContainer>
       <BackgroundSection isBlurred={isBlurred} />
       <FormSection>
-        <Typography variant="h4" gutterBottom sx={{ mb: 4, color: '#fff' }}>
+        <Typography variant="h4" gutterBottom sx={{ mb: 4 }}>
           Connexion RC Tracker
         </Typography>
         <Box component="form" onSubmit={handleLogin} sx={{ width: '100%', maxWidth: '300px' }}>
@@ -108,7 +112,7 @@ function Login({ setTokens }) {
             value={username}
             onChange={(e) => setUsername(e.target.value)}
             disabled={loading}
-            sx={{ mb: 2, input: { color: '#fff' }, '& .MuiOutlinedInput-root': { '& fieldset': { borderColor: '#fff' } } }}
+            sx={{ mb: 2 }}
           />
           <TextField
             label="Mot de passe"
@@ -118,7 +122,7 @@ function Login({ setTokens }) {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             disabled={loading}
-            sx={{ mb: 2, input: { color: '#fff' }, '& .MuiOutlinedInput-root': { '& fieldset': { borderColor: '#fff' } } }}
+            sx={{ mb: 2 }}
           />
           <StyledButton
             type="submit"
