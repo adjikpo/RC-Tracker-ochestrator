@@ -7,19 +7,15 @@ const StyledButton = styled(Button)(({ theme }) => ({
   padding: '12px 24px',
   fontSize: '18px',
   textTransform: 'none',
-  backgroundColor: '#000',
+  backgroundColor: '#1976d2',
   color: '#fff',
   borderRadius: '25px',
-  border: '2px solid #fff',
-  boxShadow: '0 4px 8px rgba(0, 0, 0, 0.3)',
   '&:hover': {
-    backgroundColor: '#333',
-    borderColor: '#ddd',
+    backgroundColor: '#1565c0',
   },
   '&:disabled': {
     backgroundColor: '#666',
     color: '#ccc',
-    borderColor: '#999',
   },
 }));
 
@@ -51,7 +47,7 @@ const BackgroundSection = styled('div')(({ isBlurred, theme }) => ({
 const FormSection = styled('div')(({ theme }) => ({
   width: '30%',
   height: '100vh',
-  backgroundColor: '#fff',
+  backgroundColor: '#1e1e1e',
   display: 'flex',
   flexDirection: 'column',
   justifyContent: 'center',
@@ -87,8 +83,8 @@ function Login({ setTokens }) {
     console.log('Tentative de connexion avec:', { username, password });
     try {
       const response = await login(username, password);
-      console.log('Réponse du backend:', response);
-      setTokens(response); // Appelle handleLoginSuccess dans App.js
+      console.log('Réponse de login:', response);
+      setTokens(response);
     } catch (err) {
       console.error('Erreur:', err.response ? err.response.data : err.message);
       setError('Identifiants incorrects ou erreur serveur');
@@ -99,10 +95,9 @@ function Login({ setTokens }) {
 
   return (
     <LoginContainer>
-      <CssBaseline />
       <BackgroundSection isBlurred={isBlurred} />
       <FormSection>
-        <Typography variant="h4" gutterBottom sx={{ mb: 4 }}>
+        <Typography variant="h4" gutterBottom sx={{ mb: 4, color: '#fff' }}>
           Connexion RC Tracker
         </Typography>
         <Box component="form" onSubmit={handleLogin} sx={{ width: '100%', maxWidth: '300px' }}>
@@ -113,7 +108,7 @@ function Login({ setTokens }) {
             value={username}
             onChange={(e) => setUsername(e.target.value)}
             disabled={loading}
-            sx={{ mb: 2 }}
+            sx={{ mb: 2, input: { color: '#fff' }, '& .MuiOutlinedInput-root': { '& fieldset': { borderColor: '#fff' } } }}
           />
           <TextField
             label="Mot de passe"
@@ -123,7 +118,7 @@ function Login({ setTokens }) {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             disabled={loading}
-            sx={{ mb: 2 }}
+            sx={{ mb: 2, input: { color: '#fff' }, '& .MuiOutlinedInput-root': { '& fieldset': { borderColor: '#fff' } } }}
           />
           <StyledButton
             type="submit"

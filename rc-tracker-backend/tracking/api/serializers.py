@@ -26,8 +26,9 @@ class UserSerializer(serializers.ModelSerializer):
 class HabitudeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Habitude
-        fields = ('id', 'nom', 'categorie')
-
+        fields = ['id', 'nom','created_by']
+        read_only_fields = ['created_by']
+        
 # Serializer pour Groupe
 class GroupeSerializer(serializers.ModelSerializer):
     section = serializers.PrimaryKeyRelatedField(queryset=Section.objects.all())

@@ -62,6 +62,9 @@ class HabitudeViewSet(viewsets.ModelViewSet):
     queryset = Habitude.objects.all()
     serializer_class = HabitudeSerializer
     permission_classes = [IsAuthenticated]
+    
+    def perform_create(self, serializer):
+        serializer.save(created_by=self.request.user)
 
 class GroupeViewSet(viewsets.ModelViewSet):
     queryset = Groupe.objects.all()
