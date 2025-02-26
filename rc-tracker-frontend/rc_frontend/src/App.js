@@ -1,7 +1,12 @@
-// src/App.js
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate, useNavigate } from 'react-router-dom';
-import { AppBar, Toolbar, Typography, Button, Box, CssBaseline, ThemeProvider, createTheme, IconButton } from '@mui/material';
+import { AppBar, Toolbar, Typography, IconButton, Drawer, List, ListItem, ListItemIcon, ListItemText, Box, CssBaseline, ThemeProvider, createTheme } from '@mui/material';
+import MenuIcon from '@mui/icons-material/Menu';
+import DashboardIcon from '@mui/icons-material/Dashboard';
+import GroupIcon from '@mui/icons-material/Group';
+import ScoreboardIcon from '@mui/icons-material/Scoreboard';
+import EditIcon from '@mui/icons-material/Edit';
+import LogoutIcon from '@mui/icons-material/Logout';
 import Brightness4Icon from '@mui/icons-material/Brightness4';
 import Brightness7Icon from '@mui/icons-material/Brightness7';
 import Login from './components/Login';
@@ -24,13 +29,13 @@ const lightTheme = createTheme({
 const darkTheme = createTheme({
   palette: {
     mode: 'dark',
-    background: { default: '#131313', paper: '#131313' },
+    background: { default: '#121212', paper: '#1e1e1e' },
     text: { primary: '#fff' },
     primary: { main: '#1976d2' },
   },
 });
 
-const dataProvider = jsonServerProvider('http://localhost:8000/tracking');
+const dataProvider = jsonServerProvider('http://192.168.1.99:8000/tracking'); // Ton IP locale
 
 function App() {
   const [tokens, setTokens] = useState(() => {
@@ -42,6 +47,7 @@ function App() {
     return savedMode ? JSON.parse(savedMode) : true;
   });
   const [isAdmin, setIsAdmin] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -49,7 +55,7 @@ function App() {
       localStorage.setItem('tokens', JSON.stringify(tokens));
       const fetchUserData = async () => {
         try {
-          const response = await fetch('http://localhost:8000/tracking/users/me/', {
+          const response = await fetch('http://192.168.1.99:8000/tracking/users/me/', {
             headers: { Authorization: `Bearer ${tokens.access}` }
           });
           const data = await response.json();
@@ -84,6 +90,18 @@ function App() {
     setIsDarkMode((prev) => !prev);
   };
 
+  const toggleMenu = () => {
+    setMenuOpen(!menuOpen);
+  };
+
+  const menuItems = [
+    { text: 'Dashboard', path: '/dashboard', icon: <DashboardIcon /> },
+    { text: 'Dashboard de groupe', path: '/group-dashboard', icon: <GroupIcon /> },
+    { text: 'Scores', path: '/scores', icon: <ScoreboardIcon /> },
+    { text: isAdmin ? 'Admin Edit' : 'Éditer le profil', path: isAdmin ? '/admin' : '/profile', icon: <EditIcon /> },
+    { text: 'Déconnexion', action: handleLogout, icon: <LogoutIcon /> },
+  ];
+
   const theme = isDarkMode ? darkTheme : lightTheme;
 
   return (
@@ -91,29 +109,35 @@ function App() {
       <CssBaseline />
       <Box sx={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
         {tokens && (
-          <AppBar position="static" sx={{ backgroundColor: isDarkMode ? '#131313' : '#131313' }}>
+          <AppBar position="static" sx={{ backgroundColor: isDarkMode ? '#131313' : '#1976d2' }}>
             <Toolbar>
+              <IconButton edge="start" color="inherit" aria-label="menu" onClick={toggleMenu}>
+                <MenuIcon />
+              </IconButton>
               <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
                 RC Tracker
               </Typography>
-              <Button color="inherit" onClick={() => navigate('/dashboard')}>
-                Dashboard
-              </Button>
-              <Button color="inherit" onClick={() => navigate('/group-dashboard')}>
-                Dashboard de groupe
-              </Button>
-              <Button color="inherit" onClick={() => navigate('/scores')}>
-                Scores
-              </Button>
-              <Button color="inherit" onClick={() => navigate(isAdmin ? '/admin' : '/profile')}>
-                {isAdmin ? 'Admin Edit' : 'Éditer le profil'}
-              </Button>
-              <Button color="inherit" onClick={handleLogout}>
-                Déconnexion
-              </Button>
             </Toolbar>
           </AppBar>
         )}
+        <Drawer anchor="left" open={menuOpen} onClose={toggleMenu}>
+          <List sx={{ width: 250 }}>
+            {menuItems.map((item) => (
+              <ListItem
+                button
+                key={item.text}
+                onClick={() => {
+                  if (item.path) navigate(item.path);
+                  if (item.action) item.action();
+                  toggleMenu();
+                }}
+              >
+                <ListItemIcon>{item.icon}</ListItemIcon>
+                <ListItemText primary={item.text} />
+              </ListItem>
+            ))}
+          </List>
+        </Drawer>
         <Box sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', p: 0 }}>
           <Routes>
             <Route path="/login" element={!tokens ? <Login setTokens={handleLoginSuccess} /> : <Navigate to="/dashboard" />} />

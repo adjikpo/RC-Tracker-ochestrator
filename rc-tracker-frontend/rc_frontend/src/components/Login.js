@@ -97,6 +97,12 @@ function Login({ setTokens }) {
     }
   };
 
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      handleLogin(e);
+    }
+  };
+
   return (
     <LoginContainer>
       <BackgroundSection isBlurred={isBlurred} />
@@ -111,6 +117,7 @@ function Login({ setTokens }) {
             fullWidth
             value={username}
             onChange={(e) => setUsername(e.target.value)}
+            onKeyPress={handleKeyPress} // Ajouté pour la touche Entrée
             disabled={loading}
             sx={{ mb: 2 }}
           />
@@ -121,6 +128,7 @@ function Login({ setTokens }) {
             fullWidth
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            onKeyPress={handleKeyPress} // Ajouté pour la touche Entrée
             disabled={loading}
             sx={{ mb: 2 }}
           />
