@@ -41,8 +41,14 @@ frontend-init:
 	@docker run --rm -v ./rc-tracker-frontend/rc_frontend:/app -w /app node:16-alpine sh -c "npx create-react-app . && npm install axios react-router-dom"
 
 frontend-install:
-	@echo "📦 Installation des dépendances frontend..."
+	@echo "📦 Installation des dépendances frontend et configuration de Tailwind CSS/Radix UI..."
 	@docker compose run --rm rc_frontend npm install
+	@docker compose run --rm rc_frontend npm install --save-dev tailwindcss @tailwindcss/forms
+	@docker compose run --rm rc_frontend npm install lucide-react @radix-ui/react-slot @radix-ui/react-button @radix-ui/react-form @radix-ui/react-card
+	@docker compose run --rm rc_frontend npx tailwindcss init -p
+	@docker compose run --rm rc_frontend sh -c "echo \"/** @type {import('tailwindcss').Config} */\\nmodule.exports = {\\n  content: [\\n    './src/**/*.{js,jsx,ts,tsx}',\\n  ],\\n  theme: {\\n    extend: {},\\n  },\\n  plugins: [\\n    require('@tailwindcss/forms'),\\n  ],\\n}\" > tailwind.config.js"
+	@docker compose run --rm rc_frontend sh -c "echo \"@tailwind base;\\n@tailwind components;\\n@tailwind utilities;\" > src/index.css"
+	@echo "✅ Tailwind CSS et Radix UI configurés !"
 
 frontend-build:
 	@echo "🏗️ Construction de l’image frontend..."

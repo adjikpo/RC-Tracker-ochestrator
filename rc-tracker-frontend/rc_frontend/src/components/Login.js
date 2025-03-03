@@ -1,83 +1,14 @@
 import React, { useState } from 'react';
-import { Button, TextField, Typography, Box } from '@mui/material';
-import { styled } from '@mui/material/styles';
+import { useNavigate } from 'react-router-dom';
 import { login } from '../services/api';
 
-const StyledButton = styled(Button)(({ theme }) => ({
-  padding: '12px 24px',
-  fontSize: '18px',
-  textTransform: 'none',
-  backgroundColor: '#000',
-  color: '#fff',
-  borderRadius: '25px',
-  border: '2px solid #fff',
-  boxShadow: '0 4px 8px rgba(0, 0, 0, 0.3)',
-  '&:hover': {
-    backgroundColor: '#333',
-    borderColor: '#ddd',
-  },
-  '&:disabled': {
-    backgroundColor: '#666',
-    color: '#ccc',
-    borderColor: '#999',
-  },
-}));
-
-const BackgroundSection = styled('div')(({ isBlurred, theme }) => ({
-  width: '70%',
-  height: '100vh',
-  backgroundImage: `url(/background.jpg)`,
-  backgroundSize: 'cover',
-  backgroundPosition: 'center',
-  filter: isBlurred ? 'blur(5px)' : 'none',
-  transition: 'filter 0.3s ease',
-  position: 'relative',
-  '&:before': {
-    content: '""',
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    width: '100%',
-    height: '100%',
-    backgroundColor: '#131313',
-    opacity: 0.5,
-  },
-  [theme.breakpoints.down('md')]: {
-    width: '100%',
-    height: '50vh',
-  },
-}));
-
-const FormSection = styled('div')(({ theme }) => ({
-  width: '30%',
-  height: '100vh',
-  backgroundColor: theme.palette.background.paper,
-  display: 'flex',
-  flexDirection: 'column',
-  justifyContent: 'center',
-  alignItems: 'center',
-  padding: '0 20px',
-  [theme.breakpoints.down('md')]: {
-    width: '100%',
-    height: '50vh',
-    padding: '20px',
-  },
-}));
-
-const LoginContainer = styled('div')(({ theme }) => ({
-  display: 'flex',
-  minHeight: '100vh',
-  [theme.breakpoints.down('md')]: {
-    flexDirection: 'column',
-  },
-}));
-
-function Login({ setTokens }) {
+function Login() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [isBlurred, setIsBlurred] = useState(false);
+  const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -88,12 +19,13 @@ function Login({ setTokens }) {
     try {
       const response = await login(username, password);
       console.log('Réponse de login:', response);
-      setTokens(response);
+      navigate('/dashboard');
     } catch (err) {
       console.error('Erreur:', err.response ? err.response.data : err.message);
       setError('Identifiants incorrects ou erreur serveur');
     } finally {
       setLoading(false);
+      setIsBlurred(false);
     }
   };
 
@@ -104,45 +36,45 @@ function Login({ setTokens }) {
   };
 
   return (
-    <LoginContainer>
-      <BackgroundSection isBlurred={isBlurred} />
-      <FormSection>
-        <Typography variant="h4" gutterBottom sx={{ mb: 4 }}>
-          Connexion RC Tracker
-        </Typography>
-        <Box component="form" onSubmit={handleLogin} sx={{ width: '100%', maxWidth: '300px' }}>
-          <TextField
-            label="Nom d’utilisateur"
-            variant="outlined"
-            fullWidth
+    <div className="flex min-h-screen flex-col md:flex-row">
+      <div
+        className={`relative w-full md:w-[70%] h-[46vh] md:h-screen bg-cover bg-center transition-filter duration-300 ${isBlurred ? 'blur-sm' : ''}`}
+        style={{ backgroundImage: 'url(/background.jpg)' }}
+      >
+        <div className="absolute inset-0 bg-black opacity-50"></div> {/* Overlay limité à cette section */}
+      </div>
+      <div className="w-full md:w-[30%] h-[54vh] md:h-screen bg-white dark:bg-gray-800 flex flex-col justify-center items-center p-5">
+        <h1 className="text-3xl font-semibold mb-8 text-gray-900 dark:text-white">Connexion RC Tracker</h1>
+        <form onSubmit={handleLogin} className="w-full max-w-xs space-y-4">
+          <input
+            type="text"
+            placeholder="Nom d’utilisateur"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
-            onKeyPress={handleKeyPress} // Ajouté pour la touche Entrée
+            onKeyPress={handleKeyPress}
             disabled={loading}
-            sx={{ mb: 2 }}
+            className="w-full px-4 py-2 border rounded-md bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
-          <TextField
-            label="Mot de passe"
+          <input
             type="password"
-            variant="outlined"
-            fullWidth
+            placeholder="Mot de passe"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            onKeyPress={handleKeyPress} // Ajouté pour la touche Entrée
+            onKeyPress={handleKeyPress}
             disabled={loading}
-            sx={{ mb: 2 }}
+            className="w-full px-4 py-2 border rounded-md bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
-          <StyledButton
+          <button
             type="submit"
             disabled={loading}
-            fullWidth
+            className="w-full py-3 px-6 text-lg bg-black text-white rounded-full border-2 border-white shadow-lg hover:bg-gray-800 hover:border-gray-300 disabled:bg-gray-600 disabled:text-gray-300 disabled:border-gray-500 disabled:cursor-not-allowed"
           >
             {loading ? 'Connexion...' : 'Se connecter'}
-          </StyledButton>
-          {error && <Typography color="error" sx={{ mt: 2, textAlign: 'center' }}>{error}</Typography>}
-        </Box>
-      </FormSection>
-    </LoginContainer>
+          </button>
+          {error && <p className="text-red-500 text-center mt-2">{error}</p>}
+        </form>
+      </div>
+    </div>
   );
 }
 

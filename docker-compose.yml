@@ -6,8 +6,8 @@ services:
       context: ./rc-tracker-frontend
     hostname: rc_frontend.internal
     restart: always
-    environment:
-      - REACT_APP_API_URL=http://rc_backend:8000  
+    env_file:
+      - ./rc-tracker-frontend/rc_frontend/.env
     ports:
       - "3000:3000" 
     volumes:

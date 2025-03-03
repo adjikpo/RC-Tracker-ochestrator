@@ -17,11 +17,11 @@ router.register(r'scores', ScoreViewSet)
 router.register(r'semaine-configs', SemaineConfigViewSet)
 
 urlpatterns = [
-    path('', include(router.urls)),
+    path('users/me/', UserMeView.as_view(), name='user_me'),
     path('token/', LoginView.as_view(), name='token_obtain_pair'),
     path('token/refresh/', RefreshTokenView.as_view(), name='token_refresh'),
     path('logout/', LogoutView.as_view(), name='logout'),
     path('groupes/<int:group_id>/membres/', GroupMembersView.as_view(), name='group_members'),
     path('groupes/<int:group_id>/scores/', GroupScoresView.as_view(), name='group_scores'),
-    path('users/me/', UserMeView.as_view(), name='user_me'),
+    path('', include(router.urls)),
 ]

@@ -25,14 +25,16 @@ class LoginView(TokenObtainPairView):
             value=response.data["access"],
             httponly=True,
             secure=False,  # False en dev
-            samesite="Lax"
+            samesite="None",
+            path="/"
         )
         response.set_cookie(
             key="refresh_token",
             value=response.data["refresh"],
             httponly=True,
             secure=False,
-            samesite="Lax"
+            samesite="None",
+            path="/"
         )
         return response
 
@@ -44,7 +46,7 @@ class RefreshTokenView(TokenRefreshView):
             value=response.data["access"],
             httponly=True,
             secure=False,
-            samesite="Lax"
+            samesite="None",
         )
         return response
 
@@ -52,7 +54,7 @@ class LogoutView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
-        response = Response({"message": "Déconnecté"}, status=status.HTTP_200_OK)
+        response = Response({"message": "Déconnecté"}, status=200)
         response.delete_cookie("access_token")
         response.delete_cookie("refresh_token")
         logout(request)
@@ -85,6 +87,9 @@ class SuiviViewSet(viewsets.ModelViewSet):
         return Suivi.objects.filter(user=self.request.user)
 
     def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+    
+    def perform_update(self, serializer):
         serializer.save(user=self.request.user)
 
 class ScoreViewSet(viewsets.ModelViewSet):

@@ -1,65 +1,95 @@
+// src/services/api.js
 import axios from 'axios';
 
-const API_URL = 'http://192.168.1.99:8000';
+export const BASE_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8000';
 
 axios.defaults.withCredentials = true;
 
 export const login = async (username, password) => {
-  const response = await axios.post(`${API_URL}/tracking/token/`, { username, password });
+  const response = await axios.post(`${BASE_URL}/tracking/token/`, { username, password });
+  console.log('Réponse login:', response.data);
+  sessionStorage.setItem('access_token', response.data.access);
   return response.data;
 };
 
-export const getHabitudes = async (token) => {
-  const response = await axios.get(`${API_URL}/tracking/habitudes/`, {
+export const getUserMe = async () => {
+  const token = sessionStorage.getItem('access_token');
+  console.log('Requête à /tracking/users/me/ avec token:', token);
+  if (!token) throw new Error('No access token found');
+  const response = await axios.get(`${BASE_URL}/tracking/users/me/`, {
+    headers: { Authorization: `Bearer ${token}` }
+  });
+  console.log('Réponse userMe:', response.data);
+  return response.data;
+};
+
+export const getHabitudes = async () => {
+  const token = sessionStorage.getItem('access_token');
+  const response = await axios.get(`${BASE_URL}/tracking/habitudes/`, {
     headers: { Authorization: `Bearer ${token}` }
   });
   return response.data;
 };
 
-export const addHabitude = async (token, habitude) => {
-  const response = await axios.post(`${API_URL}/tracking/habitudes/`, habitude, {
+export const addHabitude = async (habitude) => {
+  const token = sessionStorage.getItem('access_token');
+  const response = await axios.post(`${BASE_URL}/tracking/habitudes/`, habitude, {
     headers: { Authorization: `Bearer ${token}` }
   });
   return response.data;
 };
 
-export const updateHabitude = async (token, habitudeId, habitude) => {
-  const response = await axios.put(`${API_URL}/tracking/habitudes/${habitudeId}/`, habitude, {
+export const updateHabitude = async (habitudeId, habitude) => {
+  const token = sessionStorage.getItem('access_token');
+  const response = await axios.put(`${BASE_URL}/tracking/habitudes/${habitudeId}/`, habitude, {
     headers: { Authorization: `Bearer ${token}` }
   });
   return response.data;
 };
 
-export const deleteHabitude = async (token, habitudeId) => {
-  const response = await axios.delete(`${API_URL}/tracking/habitudes/${habitudeId}/`, {
+export const deleteHabitude = async (habitudeId) => {
+  const token = sessionStorage.getItem('access_token');
+  const response = await axios.delete(`${BASE_URL}/tracking/habitudes/${habitudeId}/`, {
     headers: { Authorization: `Bearer ${token}` }
   });
   return response.data;
 };
 
-export const addSuivi = async (token, suivi) => {
-  const response = await axios.post(`${API_URL}/tracking/suivis/`, suivi, {
+export const addSuivi = async (suivi) => {
+  const token = sessionStorage.getItem('access_token');
+  const response = await axios.post(`${BASE_URL}/tracking/suivis/`, suivi, {
     headers: { Authorization: `Bearer ${token}` }
   });
   return response.data;
 };
 
-export const getSuivis = async (token) => {
-  const response = await axios.get(`${API_URL}/tracking/suivis/`, {
+export const updateSuivi = async (suiviId, suivi) => {
+  const token = sessionStorage.getItem('access_token');
+  const response = await axios.put(`${BASE_URL}/tracking/suivis/${suiviId}/`, suivi, {
     headers: { Authorization: `Bearer ${token}` }
   });
   return response.data;
 };
 
-export const getSections = async (token) => {
-  const response = await axios.get(`${API_URL}/tracking/sections/`, {
+export const getSuivis = async () => {
+  const token = sessionStorage.getItem('access_token');
+  const response = await axios.get(`${BASE_URL}/tracking/suivis/`, {
     headers: { Authorization: `Bearer ${token}` }
   });
   return response.data;
 };
 
-export const getGroupes = async (token) => {
-  const response = await axios.get(`${API_URL}/tracking/groupes/`, {
+export const getSections = async () => {
+  const token = sessionStorage.getItem('access_token');
+  const response = await axios.get(`${BASE_URL}/tracking/sections/`, {
+    headers: { Authorization: `Bearer ${token}` }
+  });
+  return response.data;
+};
+
+export const getGroupes = async () => {
+  const token = sessionStorage.getItem('access_token');
+  const response = await axios.get(`${BASE_URL}/tracking/groupes/`, {
     headers: { Authorization: `Bearer ${token}` }
   });
   return response.data;

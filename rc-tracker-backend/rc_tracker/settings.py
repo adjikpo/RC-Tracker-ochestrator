@@ -26,7 +26,8 @@ SECRET_KEY = 'django-insecure-n8a$2m(z&#!=l+e$=4qkfp^45=9udq&qls3ht_59#c-cgzml1y
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost','127.0.0.1','rc_backend.internal', '192.168.1.99']
+# ALLOWED_HOSTS = ['localhost','127.0.0.1','rc_backend.internal' , '192.168.1.99']
+ALLOWED_HOSTS = ['localhost','127.0.0.1','rc_backend.internal' , '192.168.1.99', '*']
 
 
 # Application definition
@@ -53,6 +54,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'corsheaders.middleware.CorsMiddleware',
+    'tracking.middleware.TokenFromCookieMiddleware',
 ]
 
 ROOT_URLCONF = 'rc_tracker.urls'
@@ -137,14 +139,15 @@ AUTH_USER_MODEL = "tracking.User"
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
+        "rest_framework.authentication.SessionAuthentication",
     ),
 }
 
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(hours=1),  # Durée du token
     "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
-    "ROTATE_REFRESH_TOKENS": True,  # Nouveau refresh token à chaque refresh
-    "BLACKLIST_AFTER_ROTATION": True,  # Invalide l'ancien refresh token
+    "ROTATE_REFRESH_TOKENS": False,  # Nouveau refresh token à chaque refresh
+    "BLACKLIST_AFTER_ROTATION": False,  # Invalide l'ancien refresh token
     "AUTH_HEADER_TYPES": ("Bearer",),
     "AUTH_COOKIE": "access_token",  # Nom du cookie
     "AUTH_COOKIE_HTTP_ONLY": True,  # Protège contre XSS
@@ -157,3 +160,16 @@ CORS_ALLOWED_ORIGINS = [
     "http://192.168.1.99:3000",
 ]
 CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOW_HEADERS = [
+    "accept",
+    "accept-encoding",
+    "authorization",
+    "content-type",
+    "dnt",
+    "origin",
+    "user-agent",
+    "x-csrftoken",
+    "x-requested-with",
+    "cookie"
+]
+CORS_EXPOSE_HEADERS = ["Set-Cookie"]
